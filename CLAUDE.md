@@ -22,7 +22,7 @@ Circuits que la v1 doit afficher parfaitement (ce sont les tests de recette) :
 
 ## Le prototype fait foi pour le design
 
-`docs/prototype/hello-quantum.html` est un prototype en un seul fichier, validé par Tao (« tu as parfaitement compris ce que je voulais »). **Il définit l'identité visuelle et le comportement attendu. On le porte, on ne le redessine pas.**
+`docs/prototype/hello_quantum.html` est un prototype en un seul fichier, validé par Tao (« tu as parfaitement compris ce que je voulais »). **Il définit l'identité visuelle et le comportement attendu. On le porte, on ne le redessine pas.**
 
 À conserver à l'identique :
 
