@@ -171,7 +171,7 @@ Le site exécute du code arbitraire venu d'internet. Non négociable :
 
 ## Jalons
 
-1. **Mesure de latence d'abord.** Avant toute interface : un script qui lance le runner dans Vercel Sandbox sur l'état de Bell et mesure le temps de bout en bout. Objectif : circuit affiché en moins de 1,5 s après la pause de frappe. Importer PennyLane dans un nouveau processus à chaque exécution risque d'être trop lent ; si c'est le cas, garder un processus préchauffé dans le bac à sable qui se duplique à chaque requête. Décider sur mesure, pas sur intuition.
+1. **Mesure de latence d'abord.** Avant toute interface : un script qui lance le runner dans Vercel Sandbox sur l'état de Bell et mesure le temps de bout en bout. Objectif : circuit affiché en moins de 1,5 s après la pause de frappe. Importer PennyLane dans un nouveau processus à chaque exécution risque d'être trop lent ; si c'est le cas, garder un processus préchauffé dans le bac à sable qui se duplique à chaque requête. Décider sur mesure, pas sur intuition. **Fait le 10/11/2026** : processus neuf ≈ 2 s (rejeté) ; serveur préchauffé qui se duplique, joint par un port exposé ≈ 80 ms (retenu). Voir `docs/milestones/01-latency.md`.
 2. Runner Python + tests sur les 9 circuits de recette, en local.
 3. Portage du rendu du prototype en composants React, alimenté par des JSON de test.
 4. API `/api/run` + bac à sable + code de séance.
@@ -199,6 +199,7 @@ Le site exécute du code arbitraire venu d'internet. Non négociable :
 
 - Tao est étudiant et anime ces workshops : expliquer les choix techniques en français, simplement.
 - Commandes : `pnpm dev`, `pnpm test` (Vitest), `pnpm lint`, `uv run pytest` dans `runner/`. Mettre cette liste à jour dès que les scripts existent.
+  - Existent déjà : `pnpm sandbox:snapshot` (construit le snapshot PennyLane, id dans `.sandbox/snapshot.json`), `pnpm sandbox:latency` (mesure du jalon 1). Ils lisent `VERCEL_OIDC_TOKEN` dans `.env.local` (`vercel env pull`, valable 12 h).
 - Tout changement du runner ou de la mise en page s'accompagne d'un test. Les 9 circuits de recette sont des tests permanents.
 - Vérifier le rendu dans un vrai navigateur avant de dire qu'un changement visuel est terminé, en comparant avec le prototype.
 - Ne pas ajouter de fonctionnalité hors périmètre (sphère de Bloch, pas à pas, comptes, partage de liens) sans demander.

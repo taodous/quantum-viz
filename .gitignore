@@ -27,3 +27,6 @@ __pycache__/
 Thumbs.db
 .idea/
 .vscode/
+
+# Local sandbox state (snapshot ids, measurements scratch)
+.sandbox/

@@ -1,0 +1,18 @@
+{
+  "name": "quantum-viz",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sandbox:snapshot": "tsx scripts/sandbox/build-snapshot.ts",
+    "sandbox:latency": "tsx scripts/sandbox/measure-latency.ts"
+  },
+  "dependencies": {
+    "@vercel/sandbox": "3.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
