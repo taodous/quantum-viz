@@ -86,34 +86,46 @@ L'API interne de PennyLane pour obtenir la bande d'opérations change selon les 
 
 ### Contrat JSON
 
-Reprendre la forme du modèle de circuit du prototype pour porter le moteur de rendu sans le réécrire.
+Reprendre la forme du modèle de circuit du prototype pour porter le moteur de rendu sans le réécrire. Produit par `runner/qrunner/` (source de vérité : `execute.py`, `gates.py`, `errors.py`).
 
 ```ts
 type RunResponse =
-  | { ok: true; circuits: Circuit[]; stdout: string; durationMs: number }
-  | { ok: false; error: RunError };
+  | { ok: true; circuits: Circuit[]; stdout: string; durationMs: number;
+      hint: string | null }  // aide quand aucun circuit n'est affichable : « Appelle ton circuit, par exemple `c(np.pi/4)` »
+  | { ok: false; error: RunError; durationMs?: number };
 
 type Circuit = {
   name: string;            // "bell"
-  label: string;           // "circuit(π/4)" : un onglet par appel distinct
-  wires: { key: string; label: string }[];
+  label: string;           // "circuit(π/4)" : un onglet par appel distinct (appels identiques fusionnés)
+  wires: { key: string; label: string }[];   // key : "#0" pour un entier, "$a" pour un nom
   ops: Op[];
-  meas: Op[];              // mesures finales
+  meas: Meas[];            // mesures finales
   shots: number | null;
-  histogram: { state: string; value: number }[] | null;  // "00" → 0.498
-  histogramKind: "counts" | "probs" | null;
+  histogram: { state: string; value: number }[] | null;  // "00" → 0.498, tous les états y compris à 0
+  histogramKind: "counts" | "probs" | "theory" | null;   // theory : probabilités calculées (expval, state…)
 };
 
 type Op = {
-  name: string;            // nom PennyLane : "RY", "CNOT"
+  name: string;            // nom PennyLane : "RY", "CNOT" (base sans Adjoint/Controlled)
   label: string;           // affiché dans la porte : "RY", "X", "S†"
   family: "h" | "pauli" | "rot" | "phase" | "neutral" | "meas";
   shape: "box" | "oplus" | "dot" | "swap" | "meter" | "state" | "barrier";
   params: string[];        // déjà formatés : ["π/4"]
-  controls: string[]; controlValues: number[]; targets: string[];
-  line: number;            // ligne dans le code de l'étudiant
-  group: { id: number; name: string } | null;   // sous-fonction d'origine
-  children: Op[] | null;   // décomposition, pour les boîtes dépliables
+  controls: string[]; controlValues: number[]; targets: string[];   // clés de fils
+  line: number | null;     // ligne dans le code de l'étudiant
+  group: { id: number; name: string } | null;   // sous-fonction d'origine, un id par appel
+  children: Op[] | null;   // décomposition, pour les boîtes dépliables (templates)
+  caption: string | null;  // "mesure" pour une mesure en cours de circuit
+  cond: boolean;           // porte conditionnée par qml.cond
+  extra: number;           // contrôles ajoutés par qml.ctrl (infobulle « contrôlée »)
+};
+
+type Meas = Op & {
+  caps: Record<string, string>;  // légende par fil : "counts", "⟨Z⟩"
+  joint: boolean;          // observable sur plusieurs fils (Z⊗Z)
+  obs: string | null;      // "Z⊗Z"
+  all: boolean;            // mesure sans wires= : tous les fils
+  terminal: true;
 };
 
 type RunError = {
@@ -172,7 +184,7 @@ Le site exécute du code arbitraire venu d'internet. Non négociable :
 ## Jalons
 
 1. **Mesure de latence d'abord.** Avant toute interface : un script qui lance le runner dans Vercel Sandbox sur l'état de Bell et mesure le temps de bout en bout. Objectif : circuit affiché en moins de 1,5 s après la pause de frappe. Importer PennyLane dans un nouveau processus à chaque exécution risque d'être trop lent ; si c'est le cas, garder un processus préchauffé dans le bac à sable qui se duplique à chaque requête. Décider sur mesure, pas sur intuition. **Fait le 10/11/2026** : processus neuf ≈ 2 s (rejeté) ; serveur préchauffé qui se duplique, joint par un port exposé ≈ 80 ms (retenu). Voir `docs/milestones/01-latency.md`.
-2. Runner Python + tests sur les 9 circuits de recette, en local.
+2. Runner Python + tests sur les 9 circuits de recette, en local. **Fait le 10/11/2026** : `runner/qrunner/`, circuits de recette dans `runner/tests/circuits/`.
 3. Portage du rendu du prototype en composants React, alimenté par des JSON de test.
 4. API `/api/run` + bac à sable + code de séance.
 5. Fail-safe complet : chaque ligne du tableau ci-dessus a un test.
@@ -199,7 +211,8 @@ Le site exécute du code arbitraire venu d'internet. Non négociable :
 
 - Tao est étudiant et anime ces workshops : expliquer les choix techniques en français, simplement.
 - Commandes : `pnpm dev`, `pnpm test` (Vitest), `pnpm lint`, `uv run pytest` dans `runner/`. Mettre cette liste à jour dès que les scripts existent.
-  - Existent déjà : `pnpm sandbox:snapshot` (construit le snapshot PennyLane, id dans `.sandbox/snapshot.json`), `pnpm sandbox:latency` (mesure du jalon 1). Ils lisent `VERCEL_OIDC_TOKEN` dans `.env.local` (`vercel env pull`, valable 12 h).
+  - Existent déjà : `uv run pytest` dans `runner/` (les tests du serveur préchauffé sont sautés sous Windows), `pnpm sandbox:test-runner` (toute la suite pytest dans un bac à sable Linux, serveur compris), `pnpm sandbox:snapshot` (construit le snapshot PennyLane, id dans `.sandbox/snapshot.json`), `pnpm sandbox:latency` (mesure du jalon 1). Les scripts `sandbox:*` lisent `VERCEL_OIDC_TOKEN` dans `.env.local` (`vercel env pull`, valable 12 h).
+  - Runner : `python -m qrunner < code.py` (un processus, un JSON) ; `python -m qrunner.server` (serveur préchauffé, Linux).
 - Tout changement du runner ou de la mise en page s'accompagne d'un test. Les 9 circuits de recette sont des tests permanents.
 - Vérifier le rendu dans un vrai navigateur avant de dire qu'un changement visuel est terminé, en comparant avec le prototype.
 - Ne pas ajouter de fonctionnalité hors périmètre (sphère de Bloch, pas à pas, comptes, partage de liens) sans demander.

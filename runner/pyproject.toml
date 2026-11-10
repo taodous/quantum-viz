@@ -1,0 +1,18 @@
+[project]
+name = "quantum-viz-runner"
+version = "0.1.0"
+description = "Runs student PennyLane code and serializes the circuits it builds (executed inside Vercel Sandbox)."
+requires-python = ">=3.12"
+dependencies = ["pennylane==0.45.1"]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["."]
+markers = ["acceptance: the 9 Workshop 1 acceptance circuits"]
+
+[tool.uv]
+package = false

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "sandbox:snapshot": "tsx scripts/sandbox/build-snapshot.ts",
-    "sandbox:latency": "tsx scripts/sandbox/measure-latency.ts"
+    "sandbox:latency": "tsx scripts/sandbox/measure-latency.ts",
+    "sandbox:test-runner": "tsx scripts/sandbox/test-runner.ts"
   },
   "dependencies": {
     "@vercel/sandbox": "3.9.1"
