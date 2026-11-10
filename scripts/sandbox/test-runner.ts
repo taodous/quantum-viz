@@ -44,6 +44,7 @@ try {
   const test = await sandbox.runCommand({
     cmd: `${snap.venv}/bin/python`,
     args: ["-m", "pytest", "-v", "-rs"],
+    sudo: true, // root, like the production server: privilege-drop tests run too
     cwd: DIR,
     stdout: process.stdout,
     stderr: process.stderr,

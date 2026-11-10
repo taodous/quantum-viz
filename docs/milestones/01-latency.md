@@ -47,7 +47,7 @@ Le p90 à 401 ms du port exposé correspond à la première requête, qui ouvre 
 
 Le prototype de ce serveur est dans `runner/latency/warm_server.py`. Il sera réécrit proprement dans le runner au jalon 2.
 
-## À traiter au jalon 4 (sécurité du port exposé)
+## À traiter au jalon 4 (sécurité du port exposé) — fait, voir `04-api.md`
 
 L'URL du port exposé est publique : sans protection, quelqu'un qui la connaît peut exécuter du code dans le bac à sable sans passer par le code de séance ni par la limite de débit. Mesures prévues :
 

@@ -1,21 +1,28 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { gateCount, layout } from "@/lib/circuit/layout";
-import type { Circuit, Fixture } from "@/lib/circuit/types";
+import type { Fixture } from "@/lib/circuit/types";
 
 import { CircuitScene } from "./CircuitScene";
 import { CodeEditor } from "./CodeEditor";
+import { ErrorCard } from "./ErrorCard";
+import { SessionGate } from "./SessionGate";
 import { Sky } from "./Sky";
+import { useRun } from "./useRun";
 import { useTextMeasure } from "./useTextMeasure";
 
 type Props = {
-  /** Milestone 3: the screen is fed by runner fixtures; live execution comes with /api/run. */
-  fixture: Fixture;
-  fixtureNames: string[];
+  /** the session cookie was valid when the page was rendered */
+  authed: boolean;
+  /** starting code, and the runner's answer for it (drawn before any run) */
+  starter: Fixture;
+  /** restore the code saved in this browser (off when a fixture is opened in dev) */
+  restore?: boolean;
 };
+
+const STORAGE_KEY = "hello-quantum:code";
 
 const plural = (n: number, w: string) => (
   <>
@@ -24,21 +31,65 @@ const plural = (n: number, w: string) => (
   </>
 );
 
-export function Workbench({ fixture, fixtureNames }: Props) {
-  const router = useRouter();
+function loadCode(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function saveCode(code: string) {
+  try {
+    localStorage.setItem(STORAGE_KEY, code);
+  } catch {
+    // private mode or storage full: nothing else to do
+  }
+}
+
+export function Workbench({ authed, starter, restore = true }: Props) {
   const measure = useTextMeasure();
-  const [code, setCode] = useState(fixture.code);
+  const [code, setCode] = useState(starter.code);
+  const [restored, setRestored] = useState(false);
+  const [open, setOpen] = useState(authed);
+  const [expired, setExpired] = useState(false);
   const [selected, setSelected] = useState(0);
   const [caretLine, setCaretLine] = useState(0);
   const [hoverLine, setHoverLine] = useState(0);
 
-  const response = fixture.response;
-  const circuits: Circuit[] = response.ok ? response.circuits : [];
-  const error = response.ok ? null : response.error;
+  // The student's code survives reloads and outages: restore it, save every keystroke.
+  useEffect(() => {
+    const stored = restore ? loadCode() : null;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage only exists after hydration
+    if (stored !== null && stored.trim()) setCode(stored);
+    setRestored(true);
+  }, [restore]);
+  const onChange = useCallback((v: string) => {
+    setCode(v);
+    saveCode(v);
+  }, []);
+
+  const onSessionLost = useCallback(() => {
+    setOpen(false);
+    setExpired(true);
+  }, []);
+  const run = useRun(code, { enabled: open && restored, initial: starter, onSessionLost });
+
+  const circuits = run.good?.circuits ?? [];
+  const error = open ? run.error : null;
   const index = Math.min(selected, Math.max(0, circuits.length - 1));
   const circuit = circuits[index] ?? null;
   const L = circuit && circuit.wires.length ? layout(circuit, measure) : null;
-  const hint = response.ok ? response.hint : null;
+  const hint = run.good?.hint ?? (run.busy ? "Exécution…" : undefined);
+
+  const pill = !open
+    ? { cls: "", text: "code de séance" }
+    : run.busy
+      ? { cls: " busy", text: "exécution…" }
+      : error
+        ? { cls: " bad", text: error.kind === "infra" ? "serveur indisponible" : "code à corriger" }
+        : { cls: "", text: "PennyLane · en direct" };
+  const studentError = error && error.kind !== "infra" ? error : null;
 
   return (
     <>
@@ -52,22 +103,10 @@ export function Workbench({ fixture, fixtureNames }: Props) {
           </svg>
           <h1>Hello Quantum</h1>
           <span className="sub">Workshop 1 · du code PennyLane au circuit</span>
-          <span className={`pill${error ? " bad" : ""}`}>
+          <span className={`pill${pill.cls}`} aria-live="polite">
             <i />
-            <span>{error ? "code à corriger" : "PennyLane · en direct"}</span>
+            <span>{pill.text}</span>
           </span>
-          <select
-            className="fixture-pick"
-            aria-label="Exemple de test"
-            value={fixture.name}
-            onChange={(e) => router.push(`/?f=${encodeURIComponent(e.target.value)}`)}
-          >
-            {fixtureNames.map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
         </header>
         <main>
           <section className="panel editor" aria-label="Code Python">
@@ -75,9 +114,9 @@ export function Workbench({ fixture, fixtureNames }: Props) {
               <b>circuit.py</b>
               <span className="hint">le schéma suit ce que tu écris</span>
             </div>
-            <CodeEditor value={code} onChange={setCode} hoverLine={hoverLine} errorLine={error?.line ?? 0} onCaretLine={setCaretLine} />
-            <div className={`foot${error ? " bad" : ""}`}>
-              <span>{error ? `${error.line ? `Ligne ${error.line} · ` : ""}${error.message}` : "Python · PennyLane"}</span>
+            <CodeEditor value={code} onChange={onChange} hoverLine={hoverLine} errorLine={studentError?.line ?? 0} onCaretLine={setCaretLine} />
+            <div className={`foot${studentError ? " bad" : ""}`}>
+              <span>{studentError ? (studentError.line ? `Ligne ${studentError.line} à corriger` : "Code à corriger") : "Python · PennyLane"}</span>
             </div>
           </section>
           <section className="panel stage" aria-label="Circuit quantique">
@@ -94,15 +133,26 @@ export function Workbench({ fixture, fixtureNames }: Props) {
                 )}
               </div>
             </div>
-            <CircuitScene
-              circuit={circuit}
-              tabKey={`${fixture.name}:${index}`}
-              measure={measure}
-              caretLine={caretLine}
-              onHoverLine={setHoverLine}
-              stale={!!error}
-              emptyText={hint ?? undefined}
-            />
+            <div className="stage-body">
+              <CircuitScene
+                circuit={circuit}
+                tabKey={`${index}:${circuit?.name ?? ""}`}
+                measure={measure}
+                caretLine={caretLine}
+                onHoverLine={setHoverLine}
+                stale={!!error || !open}
+                emptyText={hint}
+              />
+              {!open ? (
+                <div className="overlay">
+                  <SessionGate onOpen={() => setOpen(true)} expired={expired} />
+                </div>
+              ) : error ? (
+                <div className="overlay">
+                  <ErrorCard error={error} />
+                </div>
+              ) : null}
+            </div>
             <div className="bar stats">
               {circuit && L ? (
                 <>

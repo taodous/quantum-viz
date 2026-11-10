@@ -67,7 +67,8 @@ Navigateur (Next.js)
   panneau circuit + histogramme <── réponse JSON
 ```
 
-- `app/` : interface Next.js. `app/api/run/route.ts` orchestre le bac à sable avec `@vercel/sandbox`. `app/api/session/route.ts` valide le code de séance.
+- `app/` : interface Next.js. `app/api/run/route.ts` envoie le code au pool de bacs à sable. `app/api/session/route.ts` valide le code de séance.
+- `lib/server/` : code serveur uniquement. `pool.ts` (pool de bacs à sable, coordination par noms), `sandboxBackend.ts` (`@vercel/sandbox`), `run.ts`, `session.ts`, `rateLimit.ts`, `config.ts` (variables d'environnement).
 - `runner/` : programme Python exécuté **dans** le bac à sable. Reçoit le code de l'étudiant, renvoie un JSON sur stdout. Testable seul, sans Vercel.
 - `lib/circuit/` : types du contrat JSON, mise en page, formatage des angles. Fonctions pures, testées.
 - `components/` : éditeur, scène du circuit (SVG), histogramme, bandeau d'erreur, ciel.
@@ -186,7 +187,7 @@ Le site exécute du code arbitraire venu d'internet. Non négociable :
 1. **Mesure de latence d'abord.** Avant toute interface : un script qui lance le runner dans Vercel Sandbox sur l'état de Bell et mesure le temps de bout en bout. Objectif : circuit affiché en moins de 1,5 s après la pause de frappe. Importer PennyLane dans un nouveau processus à chaque exécution risque d'être trop lent ; si c'est le cas, garder un processus préchauffé dans le bac à sable qui se duplique à chaque requête. Décider sur mesure, pas sur intuition. **Fait le 10/11/2026** : processus neuf ≈ 2 s (rejeté) ; serveur préchauffé qui se duplique, joint par un port exposé ≈ 80 ms (retenu). Voir `docs/milestones/01-latency.md`.
 2. Runner Python + tests sur les 9 circuits de recette, en local. **Fait le 10/11/2026** : `runner/qrunner/`, circuits de recette dans `runner/tests/circuits/`.
 3. Portage du rendu du prototype en composants React, alimenté par des JSON de test.
-4. API `/api/run` + bac à sable + code de séance.
+4. API `/api/run` + bac à sable + code de séance. **Fait le 10/11/2026** (testé contre Vercel Sandbox, pas encore déployé) : pool de bacs à sable nommés par tranches de 30 min, jeton par bac à sable, code étudiant sous `nobody`. Voir `docs/milestones/04-api.md`.
 5. Fail-safe complet : chaque ligne du tableau ci-dessus a un test.
 6. Histogramme.
 7. Boîtes dépliables pour les templates.
@@ -212,7 +213,9 @@ Le site exécute du code arbitraire venu d'internet. Non négociable :
 - Tao est étudiant et anime ces workshops : expliquer les choix techniques en français, simplement.
 - Commandes : `pnpm dev`, `pnpm test` (Vitest), `pnpm lint`, `uv run pytest` dans `runner/`. Mettre cette liste à jour dès que les scripts existent.
   - Existent déjà : `uv run pytest` dans `runner/` (les tests du serveur préchauffé sont sautés sous Windows), `pnpm sandbox:test-runner` (toute la suite pytest dans un bac à sable Linux, serveur compris), `pnpm sandbox:snapshot` (construit le snapshot PennyLane, id dans `.sandbox/snapshot.json`), `pnpm sandbox:latency` (mesure du jalon 1). Les scripts `sandbox:*` lisent `VERCEL_OIDC_TOKEN` dans `.env.local` (`vercel env pull`, valable 12 h).
-  - Runner : `python -m qrunner < code.py` (un processus, un JSON) ; `python -m qrunner.server` (serveur préchauffé, Linux).
+  - `pnpm sandbox:pool-check` (vrai pool dans Vercel : course à la création, jeton, utilisateur `nobody`, latence), `pnpm sandbox:stop` (arrête les bacs à sable `qv*` encore allumés).
+  - Runner : `python -m qrunner < code.py` (un processus, un JSON) ; `sudo python -m qrunner.server --token-sha256 <hex>` (serveur préchauffé, Linux ; `--no-auth` pour un essai local).
+  - Variables d'environnement de production : `SESSION_CODE`, `SESSION_SECRET` (≥ 32 caractères), `SANDBOX_SNAPSHOT_ID`. En développement, valeurs par défaut (code `quantum`, snapshot de `.sandbox/snapshot.json`). Détail dans `lib/server/config.ts`.
 - Tout changement du runner ou de la mise en page s'accompagne d'un test. Les 9 circuits de recette sont des tests permanents.
 - Vérifier le rendu dans un vrai navigateur avant de dire qu'un changement visuel est terminé, en comparant avec le prototype.
 - Ne pas ajouter de fonctionnalité hors périmètre (sphère de Bloch, pas à pas, comptes, partage de liens) sans demander.
