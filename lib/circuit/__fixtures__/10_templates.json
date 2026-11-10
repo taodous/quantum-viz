@@ -1,0 +1,450 @@
+{
+ "name": "10_templates",
+ "code": "import pennylane as qml\n\ndev = qml.device(\"default.qubit\", wires=3)\n\n\n@qml.set_shots(1000)\n@qml.qnode(dev)\ndef grover_template():\n    for w in range(3):\n        qml.Hadamard(wires=w)\n    qml.FlipSign([1, 0, 1], wires=[0, 1, 2])\n    qml.GroverOperator(wires=[0, 1, 2])\n    qml.QFT(wires=[0, 1])\n    return qml.counts()\n\n\nprint(grover_template())\n",
+ "response": {
+  "ok": true,
+  "circuits": [
+   {
+    "name": "grover_template",
+    "label": "grover_template()",
+    "wires": [
+     {
+      "key": "#0",
+      "label": "0"
+     },
+     {
+      "key": "#1",
+      "label": "1"
+     },
+     {
+      "key": "#2",
+      "label": "2"
+     }
+    ],
+    "ops": [
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 10,
+      "group": null
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 10,
+      "group": null
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 10,
+      "group": null
+     },
+     {
+      "name": "FlipSign",
+      "label": "FlipSign",
+      "family": "phase",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0",
+       "#1",
+       "#2"
+      ],
+      "children": [
+       {
+        "name": "PauliZ",
+        "label": "Z",
+        "family": "pauli",
+        "shape": "dot",
+        "params": [],
+        "controls": [
+         "#0",
+         "#1"
+        ],
+        "controlValues": [
+         1,
+         0
+        ],
+        "targets": [
+         "#2"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 2,
+        "line": 11,
+        "group": null
+       }
+      ],
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 11,
+      "group": null
+     },
+     {
+      "name": "GroverOperator",
+      "label": "Grover",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0",
+       "#1",
+       "#2"
+      ],
+      "children": [
+       {
+        "name": "Hadamard",
+        "label": "H",
+        "family": "h",
+        "shape": "box",
+        "params": [],
+        "controls": [],
+        "controlValues": [],
+        "targets": [
+         "#0"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 0,
+        "line": 12,
+        "group": null
+       },
+       {
+        "name": "Hadamard",
+        "label": "H",
+        "family": "h",
+        "shape": "box",
+        "params": [],
+        "controls": [],
+        "controlValues": [],
+        "targets": [
+         "#1"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 0,
+        "line": 12,
+        "group": null
+       },
+       {
+        "name": "PauliZ",
+        "label": "Z",
+        "family": "pauli",
+        "shape": "box",
+        "params": [],
+        "controls": [],
+        "controlValues": [],
+        "targets": [
+         "#2"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 0,
+        "line": 12,
+        "group": null
+       },
+       {
+        "name": "MultiControlledX",
+        "label": "X",
+        "family": "pauli",
+        "shape": "oplus",
+        "params": [],
+        "controls": [
+         "#0",
+         "#1"
+        ],
+        "controlValues": [
+         0,
+         0
+        ],
+        "targets": [
+         "#2"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 0,
+        "line": 12,
+        "group": null
+       },
+       {
+        "name": "PauliZ",
+        "label": "Z",
+        "family": "pauli",
+        "shape": "box",
+        "params": [],
+        "controls": [],
+        "controlValues": [],
+        "targets": [
+         "#2"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 0,
+        "line": 12,
+        "group": null
+       },
+       {
+        "name": "Hadamard",
+        "label": "H",
+        "family": "h",
+        "shape": "box",
+        "params": [],
+        "controls": [],
+        "controlValues": [],
+        "targets": [
+         "#0"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 0,
+        "line": 12,
+        "group": null
+       },
+       {
+        "name": "Hadamard",
+        "label": "H",
+        "family": "h",
+        "shape": "box",
+        "params": [],
+        "controls": [],
+        "controlValues": [],
+        "targets": [
+         "#1"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 0,
+        "line": 12,
+        "group": null
+       }
+      ],
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 12,
+      "group": null
+     },
+     {
+      "name": "QFT",
+      "label": "QFT",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0",
+       "#1"
+      ],
+      "children": [
+       {
+        "name": "Hadamard",
+        "label": "H",
+        "family": "h",
+        "shape": "box",
+        "params": [],
+        "controls": [],
+        "controlValues": [],
+        "targets": [
+         "#0"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 0,
+        "line": 13,
+        "group": null
+       },
+       {
+        "name": "ControlledPhaseShift",
+        "label": "P",
+        "family": "phase",
+        "shape": "box",
+        "params": [
+         "π/2"
+        ],
+        "controls": [
+         "#1"
+        ],
+        "controlValues": [
+         1
+        ],
+        "targets": [
+         "#0"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 0,
+        "line": 13,
+        "group": null
+       },
+       {
+        "name": "Hadamard",
+        "label": "H",
+        "family": "h",
+        "shape": "box",
+        "params": [],
+        "controls": [],
+        "controlValues": [],
+        "targets": [
+         "#1"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 0,
+        "line": 13,
+        "group": null
+       },
+       {
+        "name": "SWAP",
+        "label": "SWAP",
+        "family": "neutral",
+        "shape": "swap",
+        "params": [],
+        "controls": [],
+        "controlValues": [],
+        "targets": [
+         "#0",
+         "#1"
+        ],
+        "children": null,
+        "caption": null,
+        "cond": false,
+        "extra": 0,
+        "line": 13,
+        "group": null
+       }
+      ],
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 13,
+      "group": null
+     }
+    ],
+    "meas": [
+     {
+      "name": "counts",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0",
+       "#1",
+       "#2"
+      ],
+      "line": 14,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "#0": "counts",
+       "#1": "counts",
+       "#2": "counts"
+      },
+      "joint": false,
+      "obs": null,
+      "all": true,
+      "terminal": true
+     }
+    ],
+    "shots": 1000,
+    "histogram": [
+     {
+      "state": "000",
+      "value": 0.126
+     },
+     {
+      "state": "001",
+      "value": 0.487
+     },
+     {
+      "state": "010",
+      "value": 0.0
+     },
+     {
+      "state": "011",
+      "value": 0.13
+     },
+     {
+      "state": "100",
+      "value": 0.0
+     },
+     {
+      "state": "101",
+      "value": 0.135
+     },
+     {
+      "state": "110",
+      "value": 0.0
+     },
+     {
+      "state": "111",
+      "value": 0.122
+     }
+    ],
+    "histogramKind": "counts"
+   }
+  ],
+  "stdout": "{np.str_('000'): np.int64(126), np.str_('001'): np.int64(487), np.str_('011'): np.int64(130), np.str_('101'): np.int64(135), np.str_('111'): np.int64(122)}\n",
+  "hint": null,
+  "durationMs": 0
+ }
+}

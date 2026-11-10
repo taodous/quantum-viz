@@ -1,0 +1,240 @@
+{
+ "name": "07_bell",
+ "code": "import pennylane as qml\n\ndev = qml.device(\"default.qubit\", wires=2)\n\n\n@qml.set_shots(1000)\n@qml.qnode(dev)\ndef bell():\n    qml.Hadamard(wires=0)\n    qml.CNOT(wires=[0, 1])\n    return qml.counts()\n\n\n@qml.set_shots(1000)\n@qml.qnode(dev)\ndef bell_other():\n    qml.Hadamard(wires=0)\n    qml.PauliX(wires=1)\n    qml.CNOT(wires=[0, 1])\n    return qml.counts()\n\n\nprint(bell())\nprint(bell_other())\n",
+ "response": {
+  "ok": true,
+  "circuits": [
+   {
+    "name": "bell",
+    "label": "bell()",
+    "wires": [
+     {
+      "key": "#0",
+      "label": "0"
+     },
+     {
+      "key": "#1",
+      "label": "1"
+     }
+    ],
+    "ops": [
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 9,
+      "group": null
+     },
+     {
+      "name": "CNOT",
+      "label": "X",
+      "family": "pauli",
+      "shape": "oplus",
+      "params": [],
+      "controls": [
+       "#0"
+      ],
+      "controlValues": [
+       1
+      ],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 10,
+      "group": null
+     }
+    ],
+    "meas": [
+     {
+      "name": "counts",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0",
+       "#1"
+      ],
+      "line": 11,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "#0": "counts",
+       "#1": "counts"
+      },
+      "joint": false,
+      "obs": null,
+      "all": true,
+      "terminal": true
+     }
+    ],
+    "shots": 1000,
+    "histogram": [
+     {
+      "state": "00",
+      "value": 0.493
+     },
+     {
+      "state": "01",
+      "value": 0.0
+     },
+     {
+      "state": "10",
+      "value": 0.0
+     },
+     {
+      "state": "11",
+      "value": 0.507
+     }
+    ],
+    "histogramKind": "counts"
+   },
+   {
+    "name": "bell_other",
+    "label": "bell_other()",
+    "wires": [
+     {
+      "key": "#0",
+      "label": "0"
+     },
+     {
+      "key": "#1",
+      "label": "1"
+     }
+    ],
+    "ops": [
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 17,
+      "group": null
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 18,
+      "group": null
+     },
+     {
+      "name": "CNOT",
+      "label": "X",
+      "family": "pauli",
+      "shape": "oplus",
+      "params": [],
+      "controls": [
+       "#0"
+      ],
+      "controlValues": [
+       1
+      ],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 19,
+      "group": null
+     }
+    ],
+    "meas": [
+     {
+      "name": "counts",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0",
+       "#1"
+      ],
+      "line": 20,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "#0": "counts",
+       "#1": "counts"
+      },
+      "joint": false,
+      "obs": null,
+      "all": true,
+      "terminal": true
+     }
+    ],
+    "shots": 1000,
+    "histogram": [
+     {
+      "state": "00",
+      "value": 0.0
+     },
+     {
+      "state": "01",
+      "value": 0.506
+     },
+     {
+      "state": "10",
+      "value": 0.494
+     },
+     {
+      "state": "11",
+      "value": 0.0
+     }
+    ],
+    "histogramKind": "counts"
+   }
+  ],
+  "stdout": "{np.str_('00'): np.int64(493), np.str_('11'): np.int64(507)}\n{np.str_('01'): np.int64(506), np.str_('10'): np.int64(494)}\n",
+  "hint": null,
+  "durationMs": 0
+ }
+}

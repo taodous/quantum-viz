@@ -1,0 +1,62 @@
+{
+ "name": "01_zero",
+ "code": "import pennylane as qml\n\ndev = qml.device(\"default.qubit\", wires=1)\n\n\n@qml.set_shots(1000)\n@qml.qnode(dev)\ndef circuit():\n    return qml.counts()\n\n\nprint(circuit())\n",
+ "response": {
+  "ok": true,
+  "circuits": [
+   {
+    "name": "circuit",
+    "label": "circuit()",
+    "wires": [
+     {
+      "key": "#0",
+      "label": "0"
+     }
+    ],
+    "ops": [],
+    "meas": [
+     {
+      "name": "counts",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "line": 9,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "#0": "counts"
+      },
+      "joint": false,
+      "obs": null,
+      "all": true,
+      "terminal": true
+     }
+    ],
+    "shots": 1000,
+    "histogram": [
+     {
+      "state": "0",
+      "value": 1.0
+     },
+     {
+      "state": "1",
+      "value": 0.0
+     }
+    ],
+    "histogramKind": "counts"
+   }
+  ],
+  "stdout": "{np.str_('0'): np.int64(1000)}\n",
+  "hint": null,
+  "durationMs": 0
+ }
+}

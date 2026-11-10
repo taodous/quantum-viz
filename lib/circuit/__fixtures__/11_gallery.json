@@ -1,0 +1,305 @@
+{
+ "name": "11_gallery",
+ "code": "import pennylane as qml\nfrom pennylane import numpy as np\n\ndev = qml.device(\"default.qubit\", wires=[\"a\", \"b\", \"c\"])\n\n\n@qml.qnode(dev)\ndef gallery(theta):\n    qml.Hadamard(wires=\"a\")\n    qml.S(wires=\"b\")\n    qml.adjoint(qml.T(wires=\"c\"))\n    qml.RX(theta, wires=\"a\")\n    qml.CRY(np.pi / 2, wires=[\"a\", \"b\"])\n    qml.ctrl(qml.Hadamard(wires=\"c\"), control=[\"a\", \"b\"], control_values=[1, 0])\n    qml.Barrier()\n    qml.SWAP(wires=[\"b\", \"c\"])\n    qml.CZ(wires=[\"a\", \"c\"])\n    qml.Toffoli(wires=[\"a\", \"b\", \"c\"])\n    return qml.expval(qml.PauliZ(\"a\") @ qml.PauliZ(\"b\")), qml.probs(wires=[\"c\"])\n\n\nprint(gallery(0.3))\n",
+ "response": {
+  "ok": true,
+  "circuits": [
+   {
+    "name": "gallery",
+    "label": "gallery(0.3)",
+    "wires": [
+     {
+      "key": "$a",
+      "label": "a"
+     },
+     {
+      "key": "$b",
+      "label": "b"
+     },
+     {
+      "key": "$c",
+      "label": "c"
+     }
+    ],
+    "ops": [
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "$a"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 9,
+      "group": null
+     },
+     {
+      "name": "S",
+      "label": "S",
+      "family": "phase",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "$b"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 10,
+      "group": null
+     },
+     {
+      "name": "T",
+      "label": "T†",
+      "family": "phase",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "$c"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 11,
+      "group": null
+     },
+     {
+      "name": "RX",
+      "label": "RX",
+      "family": "rot",
+      "shape": "box",
+      "params": [
+       "0.3"
+      ],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "$a"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 12,
+      "group": null
+     },
+     {
+      "name": "CRY",
+      "label": "RY",
+      "family": "rot",
+      "shape": "box",
+      "params": [
+       "π/2"
+      ],
+      "controls": [
+       "$a"
+      ],
+      "controlValues": [
+       1
+      ],
+      "targets": [
+       "$b"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 13,
+      "group": null
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [
+       "$a",
+       "$b"
+      ],
+      "controlValues": [
+       1,
+       0
+      ],
+      "targets": [
+       "$c"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 2,
+      "line": 14,
+      "group": null
+     },
+     {
+      "name": "Barrier",
+      "label": "",
+      "family": "neutral",
+      "shape": "barrier",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "$a",
+       "$b",
+       "$c"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 15,
+      "group": null
+     },
+     {
+      "name": "SWAP",
+      "label": "SWAP",
+      "family": "neutral",
+      "shape": "swap",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "$b",
+       "$c"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 16,
+      "group": null
+     },
+     {
+      "name": "CZ",
+      "label": "Z",
+      "family": "pauli",
+      "shape": "dot",
+      "params": [],
+      "controls": [
+       "$a"
+      ],
+      "controlValues": [
+       1
+      ],
+      "targets": [
+       "$c"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 17,
+      "group": null
+     },
+     {
+      "name": "Toffoli",
+      "label": "X",
+      "family": "pauli",
+      "shape": "oplus",
+      "params": [],
+      "controls": [
+       "$a",
+       "$b"
+      ],
+      "controlValues": [
+       1,
+       1
+      ],
+      "targets": [
+       "$c"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 18,
+      "group": null
+     }
+    ],
+    "meas": [
+     {
+      "name": "expval",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "$a",
+       "$b"
+      ],
+      "line": 19,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "$a": "⟨Z⟩",
+       "$b": "⟨Z⟩"
+      },
+      "joint": true,
+      "obs": "Z⊗Z",
+      "all": false,
+      "terminal": true
+     },
+     {
+      "name": "probs",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "$c"
+      ],
+      "line": 19,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "$c": "probs"
+      },
+      "joint": false,
+      "obs": null,
+      "all": false,
+      "terminal": true
+     }
+    ],
+    "shots": null,
+    "histogram": [
+     {
+      "state": "0",
+      "value": 0.625
+     },
+     {
+      "state": "1",
+      "value": 0.375
+     }
+    ],
+    "histogramKind": "probs"
+   }
+  ],
+  "stdout": "(np.float64(0.2499999999999999), array([0.625, 0.375]))\n",
+  "hint": null,
+  "durationMs": 0
+ }
+}

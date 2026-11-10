@@ -1,0 +1,849 @@
+{
+ "name": "09_grover",
+ "code": "import pennylane as qml\nfrom pennylane import numpy as np\n\nn = 3\ndev = qml.device(\"default.qubit\", wires=n)\n\n\ndef oracle():\n    # Marque l'état |101⟩ en inversant son signe\n    qml.PauliX(wires=1)\n    qml.ctrl(qml.PauliZ(wires=2), control=[0, 1])\n    qml.PauliX(wires=1)\n\n\ndef diffusion():\n    for w in range(n):\n        qml.Hadamard(wires=w)\n        qml.PauliX(wires=w)\n    qml.ctrl(qml.PauliZ(wires=2), control=[0, 1])\n    for w in range(n):\n        qml.PauliX(wires=w)\n        qml.Hadamard(wires=w)\n\n\n@qml.set_shots(1000)\n@qml.qnode(dev)\ndef grover():\n    for w in range(n):\n        qml.Hadamard(wires=w)\n    for _ in range(2):\n        oracle()\n        diffusion()\n    return qml.counts()\n\n\nprint(grover())\n",
+ "response": {
+  "ok": true,
+  "circuits": [
+   {
+    "name": "grover",
+    "label": "grover()",
+    "wires": [
+     {
+      "key": "#0",
+      "label": "0"
+     },
+     {
+      "key": "#1",
+      "label": "1"
+     },
+     {
+      "key": "#2",
+      "label": "2"
+     }
+    ],
+    "ops": [
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 29,
+      "group": null
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 29,
+      "group": null
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 29,
+      "group": null
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 10,
+      "group": {
+       "id": 1,
+       "name": "oracle"
+      }
+     },
+     {
+      "name": "CCZ",
+      "label": "Z",
+      "family": "pauli",
+      "shape": "dot",
+      "params": [],
+      "controls": [
+       "#0",
+       "#1"
+      ],
+      "controlValues": [
+       1,
+       1
+      ],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 11,
+      "group": {
+       "id": 1,
+       "name": "oracle"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 12,
+      "group": {
+       "id": 1,
+       "name": "oracle"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 17,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 18,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 17,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 18,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 17,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 18,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "CCZ",
+      "label": "Z",
+      "family": "pauli",
+      "shape": "dot",
+      "params": [],
+      "controls": [
+       "#0",
+       "#1"
+      ],
+      "controlValues": [
+       1,
+       1
+      ],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 19,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 21,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 22,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 21,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 22,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 21,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 22,
+      "group": {
+       "id": 2,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 10,
+      "group": {
+       "id": 3,
+       "name": "oracle"
+      }
+     },
+     {
+      "name": "CCZ",
+      "label": "Z",
+      "family": "pauli",
+      "shape": "dot",
+      "params": [],
+      "controls": [
+       "#0",
+       "#1"
+      ],
+      "controlValues": [
+       1,
+       1
+      ],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 11,
+      "group": {
+       "id": 3,
+       "name": "oracle"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 12,
+      "group": {
+       "id": 3,
+       "name": "oracle"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 17,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 18,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 17,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 18,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 17,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 18,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "CCZ",
+      "label": "Z",
+      "family": "pauli",
+      "shape": "dot",
+      "params": [],
+      "controls": [
+       "#0",
+       "#1"
+      ],
+      "controlValues": [
+       1,
+       1
+      ],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 19,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 21,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 22,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 21,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 22,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "PauliX",
+      "label": "X",
+      "family": "pauli",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 21,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     },
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#2"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 22,
+      "group": {
+       "id": 4,
+       "name": "diffusion"
+      }
+     }
+    ],
+    "meas": [
+     {
+      "name": "counts",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0",
+       "#1",
+       "#2"
+      ],
+      "line": 33,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "#0": "counts",
+       "#1": "counts",
+       "#2": "counts"
+      },
+      "joint": false,
+      "obs": null,
+      "all": true,
+      "terminal": true
+     }
+    ],
+    "shots": 1000,
+    "histogram": [
+     {
+      "state": "000",
+      "value": 0.008
+     },
+     {
+      "state": "001",
+      "value": 0.014
+     },
+     {
+      "state": "010",
+      "value": 0.01
+     },
+     {
+      "state": "011",
+      "value": 0.011
+     },
+     {
+      "state": "100",
+      "value": 0.005
+     },
+     {
+      "state": "101",
+      "value": 0.935
+     },
+     {
+      "state": "110",
+      "value": 0.01
+     },
+     {
+      "state": "111",
+      "value": 0.007
+     }
+    ],
+    "histogramKind": "counts"
+   }
+  ],
+  "stdout": "{np.str_('000'): np.int64(8), np.str_('001'): np.int64(14), np.str_('010'): np.int64(10), np.str_('011'): np.int64(11), np.str_('100'): np.int64(5), np.str_('101'): np.int64(935), np.str_('110'): np.int64(10), np.str_('111'): np.int64(7)}\n",
+  "hint": null,
+  "durationMs": 0
+ }
+}

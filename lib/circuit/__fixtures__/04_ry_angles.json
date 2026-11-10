@@ -1,0 +1,296 @@
+{
+ "name": "04_ry_angles",
+ "code": "import pennylane as qml\nfrom pennylane import numpy as np\n\ndev = qml.device(\"default.qubit\", wires=1)\n\n\n@qml.qnode(dev)\ndef circuit(angle):\n    qml.RY(angle, wires=0)\n    return qml.probs(wires=0)\n\n\nfor angle in [0, np.pi / 4, np.pi / 2, np.pi]:\n    print(angle, circuit(angle))\n",
+ "response": {
+  "ok": true,
+  "circuits": [
+   {
+    "name": "circuit",
+    "label": "circuit(0)",
+    "wires": [
+     {
+      "key": "#0",
+      "label": "0"
+     }
+    ],
+    "ops": [
+     {
+      "name": "RY",
+      "label": "RY",
+      "family": "rot",
+      "shape": "box",
+      "params": [
+       "0"
+      ],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 9,
+      "group": null
+     }
+    ],
+    "meas": [
+     {
+      "name": "probs",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "line": 10,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "#0": "probs"
+      },
+      "joint": false,
+      "obs": null,
+      "all": false,
+      "terminal": true
+     }
+    ],
+    "shots": null,
+    "histogram": [
+     {
+      "state": "0",
+      "value": 1.0
+     },
+     {
+      "state": "1",
+      "value": 0.0
+     }
+    ],
+    "histogramKind": "probs"
+   },
+   {
+    "name": "circuit",
+    "label": "circuit(π/4)",
+    "wires": [
+     {
+      "key": "#0",
+      "label": "0"
+     }
+    ],
+    "ops": [
+     {
+      "name": "RY",
+      "label": "RY",
+      "family": "rot",
+      "shape": "box",
+      "params": [
+       "π/4"
+      ],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 9,
+      "group": null
+     }
+    ],
+    "meas": [
+     {
+      "name": "probs",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "line": 10,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "#0": "probs"
+      },
+      "joint": false,
+      "obs": null,
+      "all": false,
+      "terminal": true
+     }
+    ],
+    "shots": null,
+    "histogram": [
+     {
+      "state": "0",
+      "value": 0.8536
+     },
+     {
+      "state": "1",
+      "value": 0.1464
+     }
+    ],
+    "histogramKind": "probs"
+   },
+   {
+    "name": "circuit",
+    "label": "circuit(π/2)",
+    "wires": [
+     {
+      "key": "#0",
+      "label": "0"
+     }
+    ],
+    "ops": [
+     {
+      "name": "RY",
+      "label": "RY",
+      "family": "rot",
+      "shape": "box",
+      "params": [
+       "π/2"
+      ],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 9,
+      "group": null
+     }
+    ],
+    "meas": [
+     {
+      "name": "probs",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "line": 10,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "#0": "probs"
+      },
+      "joint": false,
+      "obs": null,
+      "all": false,
+      "terminal": true
+     }
+    ],
+    "shots": null,
+    "histogram": [
+     {
+      "state": "0",
+      "value": 0.5
+     },
+     {
+      "state": "1",
+      "value": 0.5
+     }
+    ],
+    "histogramKind": "probs"
+   },
+   {
+    "name": "circuit",
+    "label": "circuit(π)",
+    "wires": [
+     {
+      "key": "#0",
+      "label": "0"
+     }
+    ],
+    "ops": [
+     {
+      "name": "RY",
+      "label": "RY",
+      "family": "rot",
+      "shape": "box",
+      "params": [
+       "π"
+      ],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 9,
+      "group": null
+     }
+    ],
+    "meas": [
+     {
+      "name": "probs",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "line": 10,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "#0": "probs"
+      },
+      "joint": false,
+      "obs": null,
+      "all": false,
+      "terminal": true
+     }
+    ],
+    "shots": null,
+    "histogram": [
+     {
+      "state": "0",
+      "value": 0.0
+     },
+     {
+      "state": "1",
+      "value": 1.0
+     }
+    ],
+    "histogramKind": "probs"
+   }
+  ],
+  "stdout": "0 [1. 0.]\n0.7853981633974483 [0.85355339 0.14644661]\n1.5707963267948966 [0.5 0.5]\n3.141592653589793 [3.74939946e-33 1.00000000e+00]\n",
+  "hint": null,
+  "durationMs": 0
+ }
+}

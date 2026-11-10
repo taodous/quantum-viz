@@ -1,0 +1,117 @@
+{
+ "name": "00_default",
+ "code": "import pennylane as qml\nfrom pennylane import numpy as np\n\ndev = qml.device(\"default.qubit\", wires=2)\n\n\n@qml.set_shots(1000)\n@qml.qnode(dev)\ndef bell():\n    qml.Hadamard(wires=0)\n    qml.CNOT(wires=[0, 1])\n    return qml.counts()\n\n\nprint(bell())\n",
+ "response": {
+  "ok": true,
+  "circuits": [
+   {
+    "name": "bell",
+    "label": "bell()",
+    "wires": [
+     {
+      "key": "#0",
+      "label": "0"
+     },
+     {
+      "key": "#1",
+      "label": "1"
+     }
+    ],
+    "ops": [
+     {
+      "name": "Hadamard",
+      "label": "H",
+      "family": "h",
+      "shape": "box",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 10,
+      "group": null
+     },
+     {
+      "name": "CNOT",
+      "label": "X",
+      "family": "pauli",
+      "shape": "oplus",
+      "params": [],
+      "controls": [
+       "#0"
+      ],
+      "controlValues": [
+       1
+      ],
+      "targets": [
+       "#1"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 11,
+      "group": null
+     }
+    ],
+    "meas": [
+     {
+      "name": "counts",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0",
+       "#1"
+      ],
+      "line": 12,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "#0": "counts",
+       "#1": "counts"
+      },
+      "joint": false,
+      "obs": null,
+      "all": true,
+      "terminal": true
+     }
+    ],
+    "shots": 1000,
+    "histogram": [
+     {
+      "state": "00",
+      "value": 0.513
+     },
+     {
+      "state": "01",
+      "value": 0.0
+     },
+     {
+      "state": "10",
+      "value": 0.0
+     },
+     {
+      "state": "11",
+      "value": 0.487
+     }
+    ],
+    "histogramKind": "counts"
+   }
+  ],
+  "stdout": "{np.str_('00'): np.int64(513), np.str_('11'): np.int64(487)}\n",
+  "hint": null,
+  "durationMs": 0
+ }
+}

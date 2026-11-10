@@ -4,16 +4,39 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "fixtures": "cd runner && uv run python scripts/export_fixtures.py",
     "sandbox:snapshot": "tsx scripts/sandbox/build-snapshot.ts",
     "sandbox:latency": "tsx scripts/sandbox/measure-latency.ts",
     "sandbox:test-runner": "tsx scripts/sandbox/test-runner.ts"
   },
   "dependencies": {
-    "@vercel/sandbox": "3.9.1"
+    "@codemirror/commands": "6.11.1",
+    "@codemirror/lang-python": "6.2.1",
+    "@codemirror/language": "6.13.1",
+    "@codemirror/state": "6.7.6",
+    "@codemirror/view": "6.43.15",
+    "@lezer/highlight": "1.2.5",
+    "@vercel/sandbox": "3.9.1",
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@testing-library/react": "16.3.3",
     "@types/node": "^26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "eslint": "10.13.0",
+    "eslint-config-next": "16.4.3",
+    "jsdom": "30.1.3",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.3",
+    "vitest": "4.1.12"
   }
 }

@@ -1,0 +1,83 @@
+{
+ "name": "08_challenge",
+ "code": "import pennylane as qml\nfrom pennylane import numpy as np\n\ndev = qml.device(\"default.qubit\", wires=1)\n\n\n@qml.qnode(dev)\ndef circuit():\n    # On veut 25 % de |0⟩ et 75 % de |1⟩\n    qml.RY(2 * np.arccos(np.sqrt(0.25)), wires=0)\n    return qml.probs(wires=0)\n\n\nprint(circuit())\n",
+ "response": {
+  "ok": true,
+  "circuits": [
+   {
+    "name": "circuit",
+    "label": "circuit()",
+    "wires": [
+     {
+      "key": "#0",
+      "label": "0"
+     }
+    ],
+    "ops": [
+     {
+      "name": "RY",
+      "label": "RY",
+      "family": "rot",
+      "shape": "box",
+      "params": [
+       "2π/3"
+      ],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "line": 10,
+      "group": null
+     }
+    ],
+    "meas": [
+     {
+      "name": "probs",
+      "label": "ρ",
+      "family": "meas",
+      "shape": "meter",
+      "params": [],
+      "controls": [],
+      "controlValues": [],
+      "targets": [
+       "#0"
+      ],
+      "line": 11,
+      "group": null,
+      "children": null,
+      "caption": null,
+      "cond": false,
+      "extra": 0,
+      "caps": {
+       "#0": "probs"
+      },
+      "joint": false,
+      "obs": null,
+      "all": false,
+      "terminal": true
+     }
+    ],
+    "shots": null,
+    "histogram": [
+     {
+      "state": "0",
+      "value": 0.25
+     },
+     {
+      "state": "1",
+      "value": 0.75
+     }
+    ],
+    "histogramKind": "probs"
+   }
+  ],
+  "stdout": "[0.25 0.75]\n",
+  "hint": null,
+  "durationMs": 0
+ }
+}

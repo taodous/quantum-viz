@@ -1,0 +1,14 @@
+{
+ "name": "e1_syntax",
+ "code": "import pennylane as qml\n\ndev = qml.device(\"default.qubit\", wires=2)\n\n@qml.qnode(dev)\ndef bell():\n    qml.Hadamard(wires=0\n    qml.CNOT(wires=[0, 1])\n    return qml.probs()\n\nbell()\n",
+ "response": {
+  "ok": false,
+  "error": {
+   "kind": "syntax",
+   "message": "Parenthèse `(` ouverte jamais refermée",
+   "line": 7,
+   "python": "File \"<circuit>\", line 7\n    qml.Hadamard(wires=0\n                ^\nSyntaxError: '(' was never closed"
+  },
+  "durationMs": 0
+ }
+}
