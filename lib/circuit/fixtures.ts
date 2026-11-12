@@ -14,6 +14,8 @@ import f10 from "./__fixtures__/08_challenge.json";
 import f11 from "./__fixtures__/09_grover.json";
 import f12 from "./__fixtures__/e1_syntax.json";
 import f13 from "./__fixtures__/e2_wire.json";
+import f14 from "./__fixtures__/e3_name.json";
+import f15 from "./__fixtures__/e4_limit.json";
 
 export const FIXTURES: Record<string, Fixture> = {
   "00_default": f0 as unknown as Fixture,
@@ -30,6 +32,8 @@ export const FIXTURES: Record<string, Fixture> = {
   "09_grover": f11 as unknown as Fixture,
   "e1_syntax": f12 as unknown as Fixture,
   "e2_wire": f13 as unknown as Fixture,
+  "e3_name": f14 as unknown as Fixture,
+  "e4_limit": f15 as unknown as Fixture,
 };
 
 export const DEFAULT_FIXTURE = "00_default";

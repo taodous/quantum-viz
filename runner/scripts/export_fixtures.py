@@ -34,6 +34,8 @@ print(bell())
 ERRORS = {
     "e1_syntax": "import pennylane as qml\n\ndev = qml.device(\"default.qubit\", wires=2)\n\n@qml.qnode(dev)\ndef bell():\n    qml.Hadamard(wires=0\n    qml.CNOT(wires=[0, 1])\n    return qml.probs()\n\nbell()\n",
     "e2_wire": "import pennylane as qml\n\ndev = qml.device(\"default.qubit\", wires=2)\n\n@qml.qnode(dev)\ndef bell():\n    qml.Hadamard(wires=0)\n    qml.CNOT(wires=[0, 2])\n    return qml.probs()\n\nbell()\n",
+    "e3_name": "import pennylane as qml\n\ndev = qml.device(\"default.qubit\", wires=1)\n\n@qml.qnode(dev)\ndef circuit(theta):\n    qml.RY(thet, wires=0)\n    return qml.probs()\n\ncircuit(0.5)\n",
+    "e4_limit": "import pennylane as qml\n\ndev = qml.device(\"default.qubit\", wires=1)\n\n@qml.qnode(dev)\ndef circuit():\n    for _ in range(5000):\n        qml.PauliX(wires=0)\n    return qml.probs()\n\ncircuit()\n",
 }
 
 

@@ -188,8 +188,8 @@ Le site exécute du code arbitraire venu d'internet. Non négociable :
 2. Runner Python + tests sur les 9 circuits de recette, en local. **Fait le 10/11/2026** : `runner/qrunner/`, circuits de recette dans `runner/tests/circuits/`.
 3. Portage du rendu du prototype en composants React, alimenté par des JSON de test.
 4. API `/api/run` + bac à sable + code de séance. **Fait le 10/11/2026** (testé contre Vercel Sandbox, pas encore déployé) : pool de bacs à sable nommés par tranches de 30 min, jeton par bac à sable, code étudiant sous `nobody`. Voir `docs/milestones/04-api.md`.
-5. Fail-safe complet : chaque ligne du tableau ci-dessus a un test.
-6. Histogramme.
+5. Fail-safe complet : chaque ligne du tableau ci-dessus a un test. **Fait le 12/11/2026** : `components/failsafe.test.tsx`, garde-fou du rendu `SafeRender`, dernier circuit valide sauvegardé dans le navigateur.
+6. Histogramme. **Fait le 12/11/2026** : `components/Histogram.tsx`. Voir `docs/milestones/05-06-failsafe-histogram.md`.
 7. Boîtes dépliables pour les templates.
 8. Répétition générale : 30 onglets ouverts en même temps pendant 10 minutes.
 

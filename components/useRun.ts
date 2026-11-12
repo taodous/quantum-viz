@@ -11,9 +11,11 @@ const MAX_AUTO_RETRIES = 4;
 
 export const CONNECTION_LOST: RunError = { kind: "infra", message: "Connexion perdue. Ton code est conservé.", line: null, python: null };
 
+export type GoodRun = { code: string; circuits: Circuit[]; hint: string | null };
+
 export type RunState = {
-  /** last successful answer: what the circuit panel draws */
-  good: { circuits: Circuit[]; hint: string | null } | null;
+  /** last successful answer, and the code it answers: what the circuit panel draws */
+  good: GoodRun | null;
   /** error to show over the (greyed) last good circuit */
   error: RunError | null;
   busy: boolean;
@@ -23,7 +25,11 @@ export type RunState = {
 
 type Options = {
   enabled: boolean;
-  /** an answer already known for the initial code (no run needed for it) */
+  /**
+   * An answer already known (no run needed for its code). When it changes, its
+   * circuit replaces the one on screen: after a reload, the last valid circuit
+   * saved in the browser stays visible even if the restored code is broken.
+   */
   initial?: { code: string; response: RunResponse };
   onSessionLost?: () => void;
 };
@@ -36,7 +42,7 @@ type Options = {
 export function useRun(code: string, { enabled, initial, onSessionLost }: Options): RunState {
   const [state, setState] = useState<RunState>(() => {
     const r = initial?.code === code ? initial.response : null;
-    return { good: r?.ok ? { circuits: r.circuits, hint: r.hint } : null, error: r && !r.ok ? r.error : null, busy: false, needSession: false };
+    return { good: r?.ok ? { code, circuits: r.circuits, hint: r.hint } : null, error: r && !r.ok ? r.error : null, busy: false, needSession: false };
   });
   const [retry, setRetry] = useState(0); // bumping it re-runs the same code
   const retryNow = useRef(false);
@@ -47,6 +53,19 @@ export function useRun(code: string, { enabled, initial, onSessionLost }: Option
   useEffect(() => {
     lost.current = onSessionLost;
   });
+
+  // A new known answer (declared before the run effect, so its skip applies to this same commit).
+  const seeded = useRef(initial);
+  useEffect(() => {
+    if (!initial || initial === seeded.current) return;
+    seeded.current = initial;
+    const r = initial.response;
+    if (r.ok) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- the known answer comes from localStorage, after hydration
+      setState((s) => ({ ...s, good: { code: initial.code, circuits: r.circuits, hint: r.hint } }));
+      if (initial.code === code) skipFor.current = code;
+    }
+  }, [initial, code]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -101,7 +120,7 @@ export function useRun(code: string, { enabled, initial, onSessionLost }: Option
         return;
       }
       if (body.ok) {
-        settle({ good: { circuits: body.circuits, hint: body.hint }, error: null, needSession: false });
+        settle({ good: { code, circuits: body.circuits, hint: body.hint }, error: null, needSession: false });
         return;
       }
       settle({ error: body.error, needSession: false });

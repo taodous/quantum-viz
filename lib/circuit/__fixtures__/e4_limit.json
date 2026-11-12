@@ -1,0 +1,14 @@
+{
+ "name": "e4_limit",
+ "code": "import pennylane as qml\n\ndev = qml.device(\"default.qubit\", wires=1)\n\n@qml.qnode(dev)\ndef circuit():\n    for _ in range(5000):\n        qml.PauliX(wires=0)\n    return qml.probs()\n\ncircuit()\n",
+ "response": {
+  "ok": false,
+  "error": {
+   "kind": "limit",
+   "message": "Circuit trop grand pour être affiché (plus de 2500 portes)",
+   "line": 8,
+   "python": null
+  },
+  "durationMs": 0
+ }
+}

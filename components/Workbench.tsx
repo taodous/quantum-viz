@@ -1,16 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { gateCount, layout } from "@/lib/circuit/layout";
-import type { Fixture } from "@/lib/circuit/types";
+import { gateCount, layout, type Measure } from "@/lib/circuit/layout";
+import type { Circuit, Fixture, RunResponse } from "@/lib/circuit/types";
 
 import { CircuitScene } from "./CircuitScene";
 import { CodeEditor } from "./CodeEditor";
 import { ErrorCard } from "./ErrorCard";
+import { Histogram } from "./Histogram";
+import { SafeRender } from "./SafeRender";
 import { SessionGate } from "./SessionGate";
 import { Sky } from "./Sky";
-import { useRun } from "./useRun";
+import { type GoodRun, useRun } from "./useRun";
 import { useTextMeasure } from "./useTextMeasure";
 
 type Props = {
@@ -23,6 +25,8 @@ type Props = {
 };
 
 const STORAGE_KEY = "hello-quantum:code";
+/** last valid answer, so a reload with broken code still shows the student's own circuit */
+const LAST_GOOD_KEY = "hello-quantum:last-good";
 
 const plural = (n: number, w: string) => (
   <>
@@ -47,9 +51,42 @@ function saveCode(code: string) {
   }
 }
 
+type Known = { code: string; response: RunResponse };
+
+function loadLastGood(): Known | null {
+  try {
+    const v = JSON.parse(localStorage.getItem(LAST_GOOD_KEY) ?? "null") as GoodRun | null;
+    if (!v || typeof v.code !== "string" || !Array.isArray(v.circuits) || !v.circuits.length) return null;
+    return { code: v.code, response: { ok: true, circuits: v.circuits, hint: v.hint ?? null, stdout: "", durationMs: 0 } };
+  } catch {
+    return null;
+  }
+}
+
+function saveLastGood(good: GoodRun) {
+  try {
+    localStorage.setItem(LAST_GOOD_KEY, JSON.stringify(good));
+  } catch {
+    // too big for storage: the reload will show the starter circuit instead
+  }
+}
+
+/** Header numbers; null rather than a crash if the circuit is malformed. */
+function stats(circuit: Circuit | null, measure: Measure) {
+  try {
+    if (!circuit?.wires.length) return null;
+    return { qubits: circuit.wires.length, gates: gateCount(circuit), depth: layout(circuit, measure).depth, shots: circuit.shots };
+  } catch {
+    return null;
+  }
+}
+
+const RENDER_FAILED = "Affichage impossible pour ce circuit";
+
 export function Workbench({ authed, starter, restore = true }: Props) {
   const measure = useTextMeasure();
   const [code, setCode] = useState(starter.code);
+  const [known, setKnown] = useState<Known>(starter);
   const [restored, setRestored] = useState(false);
   const [open, setOpen] = useState(authed);
   const [expired, setExpired] = useState(false);
@@ -60,8 +97,10 @@ export function Workbench({ authed, starter, restore = true }: Props) {
   // The student's code survives reloads and outages: restore it, save every keystroke.
   useEffect(() => {
     const stored = restore ? loadCode() : null;
+    const last = restore ? loadLastGood() : null;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage only exists after hydration
     if (stored !== null && stored.trim()) setCode(stored);
+    if (last) setKnown(last);
     setRestored(true);
   }, [restore]);
   const onChange = useCallback((v: string) => {
@@ -73,14 +112,21 @@ export function Workbench({ authed, starter, restore = true }: Props) {
     setOpen(false);
     setExpired(true);
   }, []);
-  const run = useRun(code, { enabled: open && restored, initial: starter, onSessionLost });
+  const run = useRun(code, { enabled: open && restored, initial: known, onSessionLost });
+  useEffect(() => {
+    if (run.good && restore && run.good.code !== starter.code) saveLastGood(run.good);
+  }, [run.good, restore, starter.code]);
 
-  const circuits = run.good?.circuits ?? [];
+  const circuits = Array.isArray(run.good?.circuits) ? run.good.circuits : [];
   const error = open ? run.error : null;
   const index = Math.min(selected, Math.max(0, circuits.length - 1));
   const circuit = circuits[index] ?? null;
-  const L = circuit && circuit.wires.length ? layout(circuit, measure) : null;
+  const S = stats(circuit, measure);
   const hint = run.good?.hint ?? (run.busy ? "Exécution…" : undefined);
+  const tabKey = `${index}:${circuit?.name ?? ""}`;
+  // Stable while nothing changes: a new value is what lets SafeRender try again after a failure.
+  const drawn = useMemo(() => ({ circuit, tabKey }), [circuit, tabKey]);
+  const stale = !!error || !open;
 
   const pill = !open
     ? { cls: "", text: "code de séance" }
@@ -124,8 +170,8 @@ export function Workbench({ authed, starter, restore = true }: Props) {
               <div className="chips">
                 {circuits.length ? (
                   circuits.map((c, i) => (
-                    <button key={`${i}-${c.label}`} className="chip" type="button" aria-pressed={i === index} onClick={() => setSelected(i)}>
-                      {c.label}
+                    <button key={`${i}-${c?.label}`} className="chip" type="button" aria-pressed={i === index} onClick={() => setSelected(i)}>
+                      {typeof c?.label === "string" ? c.label : `circuit ${i + 1}`}
                     </button>
                   ))
                 ) : (
@@ -134,14 +180,27 @@ export function Workbench({ authed, starter, restore = true }: Props) {
               </div>
             </div>
             <div className="stage-body">
-              <CircuitScene
-                circuit={circuit}
-                tabKey={`${index}:${circuit?.name ?? ""}`}
-                measure={measure}
-                caretLine={caretLine}
-                onHoverLine={setHoverLine}
-                stale={!!error || !open}
-                emptyText={hint}
+              <SafeRender
+                value={drawn}
+                render={(v, failed) => (
+                  <>
+                    <CircuitScene
+                      circuit={v.circuit}
+                      tabKey={v.tabKey}
+                      measure={measure}
+                      caretLine={caretLine}
+                      onHoverLine={setHoverLine}
+                      stale={stale || failed}
+                      emptyText={hint}
+                    />
+                    {v.circuit ? <Histogram key={v.tabKey} circuit={v.circuit} stale={stale || failed} /> : null}
+                  </>
+                )}
+                failure={(e) => (
+                  <div className="overlay">
+                    <ErrorCard error={{ kind: "infra", message: RENDER_FAILED, line: null, python: e.message || String(e) }} detailLabel="détail" />
+                  </div>
+                )}
               />
               {!open ? (
                 <div className="overlay">
@@ -154,14 +213,14 @@ export function Workbench({ authed, starter, restore = true }: Props) {
               ) : null}
             </div>
             <div className="bar stats">
-              {circuit && L ? (
+              {S ? (
                 <>
-                  <span>{plural(circuit.wires.length, "qubit")}</span>
-                  <span>{plural(gateCount(circuit), "porte")}</span>
+                  <span>{plural(S.qubits, "qubit")}</span>
+                  <span>{plural(S.gates, "porte")}</span>
                   <span>
-                    profondeur <b>{L.depth}</b>
+                    profondeur <b>{S.depth}</b>
                   </span>
-                  {circuit.shots ? <span>{plural(circuit.shots, "shot")}</span> : null}
+                  {S.shots ? <span>{plural(S.shots, "shot")}</span> : null}
                 </>
               ) : (
                 <span>en attente d&apos;un circuit</span>

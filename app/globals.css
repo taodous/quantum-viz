@@ -97,6 +97,26 @@ main { display: grid; grid-template-columns: minmax(320px, 40%) minmax(0, 1fr); 
 .stats b { font-weight: 500; color: var(--silver) }
 .stats span + span::before { content: "·"; margin: 0 12px; color: var(--faint) }
 
+/* ---- histogram, under the circuit ---- */
+.histo { flex: none; margin: 0 18px; padding: 10px 0 12px; border-top: 1px solid var(--edge); transition: opacity .3s }
+.histo.stale { opacity: .38 }
+.histo figcaption { font: 500 10.5px var(--f-mono); color: var(--faint); letter-spacing: .04em; margin-bottom: 4px; width: fit-content; cursor: help }
+.h-bars { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; align-items: flex-end; gap: 12px; height: clamp(120px, 22vh, 180px) }
+.compact .h-bars { gap: 2px; height: 108px }
+.h-bars li { flex: 1 1 0; min-width: 0; max-width: 64px; height: 100%; display: flex; flex-direction: column; align-items: stretch }
+.h-track { --v: 0; position: relative; flex: 1; min-height: 0; margin-top: 18px; border-bottom: 1px solid var(--wire) }
+.h-fill { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--v) * 100%); min-height: 2px; border-radius: 4px 4px 0 0;
+  background: linear-gradient(to top, rgba(242, 212, 138, .08), rgba(242, 212, 138, .30)); border-top: 1.5px solid var(--gold);
+  box-shadow: 0 -2px 12px -4px rgba(242, 212, 138, .55); transform-origin: bottom;
+  transition: height .5s cubic-bezier(.2, .8, .2, 1); animation: barIn .55s cubic-bezier(.2, .8, .2, 1) backwards }
+.zero .h-fill { min-height: 0; border-top: 0; box-shadow: none }
+.h-pct { position: absolute; left: 50%; bottom: calc(var(--v) * 100% + 4px); transform: translateX(-50%); white-space: nowrap;
+  font: 500 10.5px var(--f-mono); color: var(--text); transition: bottom .5s cubic-bezier(.2, .8, .2, 1) }
+.zero .h-pct { color: var(--faint) }
+.h-ket { margin-top: 5px; text-align: center; font: 500 12.5px var(--f-display); color: var(--silver); white-space: nowrap }
+.zero .h-ket { color: var(--dim) }
+@keyframes barIn { from { transform: scaleY(0) } }
+
 /* ---- over the circuit: error, session code ---- */
 .overlay { position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; padding: 22px 18px; pointer-events: none; overflow: auto }
 .overlay > * { pointer-events: auto }
@@ -170,13 +190,14 @@ main { display: grid; grid-template-columns: minmax(320px, 40%) minmax(0, 1fr); 
   body { overflow: auto }
   .app { height: auto; min-height: 100%; grid-template-rows: auto auto }
   main { grid-template-columns: minmax(0, 1fr) }
-  .stage { order: -1; height: min(52vh, 420px); min-height: 300px }
+  .stage { order: -1; height: min(76vh, 600px); min-height: 460px }
+  .h-bars { gap: 6px }
   .editor { height: 440px }
   .sub { display: none }
 }
 @media (prefers-reduced-motion: reduce) {
   .comet { display: none }
   .pill.busy i { animation: none }
-  .gate.enter, .wire.enter .w-q, .wire.enter text { animation: none; stroke-dashoffset: 0 }
+  .gate.enter, .wire.enter .w-q, .wire.enter text, .h-fill { animation: none; stroke-dashoffset: 0 }
   * { transition: none !important }
 }

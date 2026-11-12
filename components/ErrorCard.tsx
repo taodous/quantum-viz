@@ -6,7 +6,7 @@ export function withCode(text: string) {
 }
 
 /** Error over the greyed last good circuit: one French sentence, Python's own message folded below. */
-export function ErrorCard({ error }: { error: RunError }) {
+export function ErrorCard({ error, detailLabel = "message Python" }: { error: RunError; detailLabel?: string }) {
   return (
     <div className="err-card" role="alert">
       <p>
@@ -15,7 +15,7 @@ export function ErrorCard({ error }: { error: RunError }) {
       </p>
       {error.python ? (
         <details>
-          <summary>message Python</summary>
+          <summary>{detailLabel}</summary>
           <pre>{error.python}</pre>
         </details>
       ) : null}

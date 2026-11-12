@@ -1,0 +1,14 @@
+{
+ "name": "e3_name",
+ "code": "import pennylane as qml\n\ndev = qml.device(\"default.qubit\", wires=1)\n\n@qml.qnode(dev)\ndef circuit(theta):\n    qml.RY(thet, wires=0)\n    return qml.probs()\n\ncircuit(0.5)\n",
+ "response": {
+  "ok": false,
+  "error": {
+   "kind": "runtime",
+   "message": "`thet` n'est pas défini (tu voulais dire `theta` ?)",
+   "line": 7,
+   "python": "NameError: name 'thet' is not defined"
+  },
+  "durationMs": 0
+ }
+}

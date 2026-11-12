@@ -190,3 +190,14 @@ def test_runner_state_is_reset_between_runs(ok, err):
     assert len(out["circuits"]) == 1
     out = ok("x = 1\n")
     assert out["circuits"] == []
+
+
+def test_output_too_big_becomes_a_limit_error():
+    import json
+
+    from qrunner.execute import to_json
+    from qrunner.limits import MAX_OUTPUT_BYTES
+
+    huge = {"ok": True, "circuits": [], "stdout": "x" * (MAX_OUTPUT_BYTES + 1), "hint": None, "durationMs": 3}
+    out = json.loads(to_json(huge))
+    assert out == {"ok": False, "error": {"kind": "limit", "message": "Résultat trop gros pour être affiché", "line": None, "python": None}, "durationMs": 3}

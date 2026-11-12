@@ -71,5 +71,4 @@ En local, `pnpm dev` fonctionne sans rien configurer : code de séance `quantum`
 ## Points restants
 
 - Latence en production (fonction `cdg1` → bac à sable `cdg1`) : à mesurer après le premier déploiement. Attendu : un peu mieux qu'en local.
-- Le jalon 5 ajoutera un test par ligne du tableau fail-safe ; ce jalon pose déjà l'encadré d'erreur sur le circuit grisé, la ligne surlignée, « Connexion perdue » et les nouveaux essais automatiques.
-- Après un rechargement de la page avec du code en erreur, le circuit grisé affiché est celui de l'exemple de départ, pas le dernier circuit valide de l'étudiant (il n'est pas sauvegardé).
+- ~~Tests du tableau fail-safe ; dernier circuit valide perdu au rechargement~~ : faits au jalon 5 (`05-06-failsafe-histogram.md`).
