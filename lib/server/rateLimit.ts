@@ -14,6 +14,14 @@ export class TokenBucket {
     private maxKeys = 5_000,
   ) {}
 
+  /** Is a token available? Consumes nothing (to count only some outcomes, e.g. failed attempts). */
+  peek(key: string, now = Date.now()): { ok: boolean; retryAfterS: number } {
+    const b = this.buckets.get(key);
+    if (!b) return { ok: true, retryAfterS: 0 };
+    const tokens = Math.min(this.capacity, b.tokens + ((now - b.at) / 1000) * this.refillPerSecond);
+    return tokens >= 1 ? { ok: true, retryAfterS: 0 } : { ok: false, retryAfterS: Math.ceil((1 - tokens) / this.refillPerSecond) };
+  }
+
   /** Take one token. `retryAfterS` says when the next one will be there. */
   take(key: string, now = Date.now()): { ok: boolean; retryAfterS: number } {
     let b = this.buckets.get(key);

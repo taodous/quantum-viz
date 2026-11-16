@@ -22,7 +22,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, message: "Le serveur n'est pas configuré. Préviens l'animateur." }, { status: 500 });
   }
 
-  const limited = svc.loginLimit.take(clientIp(req));
+  // Only wrong codes count: a whole class behind one school IP must get in at once.
+  const ip = clientIp(req);
+  const limited = svc.loginLimit.peek(ip);
   if (!limited.ok) {
     return NextResponse.json(
       { ok: false, message: `Trop d'essais. Réessaie dans ${limited.retryAfterS} s.` },
@@ -33,6 +35,7 @@ export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => null)) as { code?: unknown } | null;
   const code = typeof body?.code === "string" ? body.code.slice(0, 200) : "";
   if (!code.trim() || !codeMatches(code, cfg.sessionCode, cfg.sessionSecret)) {
+    svc.loginLimit.take(ip);
     return NextResponse.json({ ok: false, message: "Ce n'est pas le bon code de séance." }, { status: 401 });
   }
 

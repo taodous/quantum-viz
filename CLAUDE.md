@@ -191,7 +191,7 @@ Le site exécute du code arbitraire venu d'internet. Non négociable :
 5. Fail-safe complet : chaque ligne du tableau ci-dessus a un test. **Fait le 12/11/2026** : `components/failsafe.test.tsx`, garde-fou du rendu `SafeRender`, dernier circuit valide sauvegardé dans le navigateur.
 6. Histogramme. **Fait le 12/11/2026** : `components/Histogram.tsx`. Voir `docs/milestones/05-06-failsafe-histogram.md`.
 7. Boîtes dépliables pour les templates.
-8. Répétition générale : 30 onglets ouverts en même temps pendant 10 minutes.
+8. Répétition générale : 30 onglets ouverts en même temps pendant 10 minutes. Script prêt (`pnpm rehearsal`, voir `docs/milestones/08-rehearsal.md`), à lancer contre la production.
 
 ## Points à vérifier avant de s'engager
 
@@ -214,6 +214,7 @@ Le site exécute du code arbitraire venu d'internet. Non négociable :
 - Commandes : `pnpm dev`, `pnpm test` (Vitest), `pnpm lint`, `uv run pytest` dans `runner/`. Mettre cette liste à jour dès que les scripts existent.
   - Existent déjà : `uv run pytest` dans `runner/` (les tests du serveur préchauffé sont sautés sous Windows), `pnpm sandbox:test-runner` (toute la suite pytest dans un bac à sable Linux, serveur compris), `pnpm sandbox:snapshot` (construit le snapshot PennyLane, id dans `.sandbox/snapshot.json`), `pnpm sandbox:latency` (mesure du jalon 1). Les scripts `sandbox:*` lisent `VERCEL_OIDC_TOKEN` dans `.env.local` (`vercel env pull`, valable 12 h).
   - `pnpm sandbox:pool-check` (vrai pool dans Vercel : course à la création, jeton, utilisateur `nobody`, latence), `pnpm sandbox:stop` (arrête les bacs à sable `qv*` encore allumés).
+  - `HQ_SESSION_CODE=<code> pnpm rehearsal` : répétition générale contre le site déployé (30 étudiants simulés, 10 min, même IP ; `--students`, `--minutes`, `--url`, `--code`). Verdict à la fin, détail dans `.sandbox/rehearsal-*.json`. `--students 1 --minutes 1` mesure la latence en production.
   - Runner : `python -m qrunner < code.py` (un processus, un JSON) ; `sudo python -m qrunner.server --token-sha256 <hex>` (serveur préchauffé, Linux ; `--no-auth` pour un essai local).
   - Variables d'environnement de production : `SESSION_CODE`, `SESSION_SECRET` (≥ 32 caractères), `SANDBOX_SNAPSHOT_ID`. En développement, valeurs par défaut (code `quantum`, snapshot de `.sandbox/snapshot.json`). Détail dans `lib/server/config.ts`.
 - Tout changement du runner ou de la mise en page s'accompagne d'un test. Les 9 circuits de recette sont des tests permanents.

@@ -27,7 +27,7 @@ export function services(): Services {
     pool,
     // A typing pause triggers a run: 20 in a burst, then one per second.
     runLimit: new TokenBucket(20, 1),
-    // Session code attempts per IP: 8, then one every 10 s.
+    // Wrong session codes per IP: 8, then one every 10 s (right codes are never limited).
     loginLimit: new TokenBucket(8, 0.1),
   };
   return g.__hqServices;

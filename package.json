@@ -14,7 +14,8 @@
     "sandbox:latency": "tsx scripts/sandbox/measure-latency.ts",
     "sandbox:test-runner": "tsx scripts/sandbox/test-runner.ts",
     "sandbox:pool-check": "tsx scripts/sandbox/pool-check.ts",
-    "sandbox:stop": "tsx scripts/sandbox/stop-pool.ts"
+    "sandbox:stop": "tsx scripts/sandbox/stop-pool.ts",
+    "rehearsal": "tsx scripts/rehearsal.ts"
   },
   "dependencies": {
     "@codemirror/commands": "6.11.1",
